@@ -84,10 +84,11 @@ module DiscourseCodeReview
       end
 
       def each(&blk)
+        puts "ALERT Calling PR QUERIER"
         enumerables = [
           pr_querier.timeline(pr)
         ]
-
+        puts "ENUMERABLE PUSH CALLING"
         enumerables.push(
           pr_querier
             .commit_threads(pr)

@@ -10,7 +10,7 @@ module DiscourseCodeReview
       @pr_service = pr_service
       @user_syncer = user_syncer
     end
-
+    puts "In pr syncer file now"
     def sync_pull_request(repo_name, issue_number, repo_id: nil)
       owner, name = repo_name.split('/', 2)
 

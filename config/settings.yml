@@ -1,11 +1,9 @@
 plugins:
-  code_review_enabled: false
-  code_review_allowed_groups:
-    default: ""
-    type: group_list
-    list_type: compact
+  code_review_enabled: true
   code_review_github_token: ""
-  code_review_sync_to_github: false
+  code_review_sync_to_github: true
+  code_review_commits_and_prs_enabled: true
+  code_review_issues_enabled: true
   code_review_catch_up_commits: 10
   code_review_allow_private_clone: false
   code_review_allow_manual_followup:
@@ -23,6 +21,7 @@ plugins:
   code_review_unmerged_tag: "unmerged"
   code_review_commit_tag: "commit"
   code_review_pull_request_tag: "pull-request"
+  code_review_issue_tag: "issue"
   code_review_github_webhook_secret:
     default: ""
     secret: true
@@ -39,7 +38,6 @@ plugins:
   code_review_default_parent_category:
     type: category
     default: ""
-    validator: "ParentCategoryValidator"
-  code_review_debug:
+  code_review_theme:
+    client: true
     default: false
-    hidden: true
