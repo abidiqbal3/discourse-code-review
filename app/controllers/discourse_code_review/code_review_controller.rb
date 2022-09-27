@@ -28,7 +28,6 @@ module DiscourseCodeReview
       end
 
       type = request.env['HTTP_X_GITHUB_EVENT']
-      puts "github webhooks received of this type "+type
       # unique hash for webhook
       # delivery = request.env['HTTP_X_GITHUB_DELIVERY']
 
@@ -36,26 +35,17 @@ module DiscourseCodeReview
       if repo.present?
         repo_id = repo["id"]
         repo_name = repo["full_name"]
-        puts "Repo name received is "+repo_name;
       end
 
       Rails.logger.warn("repo_name is blank. #{params.to_json}") if repo_name.blank?
-      File.write('/home/abid/Disc/discourse/plugins/discourse-code-review/data.json', params.to_json)
-      # puts "Parameters of the request are "+params.to_json
-      
-      # r=params[:issue]["pull_request"].present?
-      
-      # puts "To test whether it is present or not"+r.to_s
-      
+      File.write('/home/abid/Disc/discourse/plugins/discourse-code-review/data.json', params.to_json)                  
       if type == "issue_comment" && params[:issue]["pull_request"].present?
         type = "pull_request_comment"
-        puts "ALERT NOTIFICATION: Pull request comment received"
       end
 
       if SiteSetting.code_review_commits_and_prs_enabled
         if type == "commit_comment"
           commit_sha = params["comment"]["commit_id"]
-          puts "ALERT NOTIFICATION: pull request comment received"
           ::Jobs.enqueue(
             :code_review_sync_commit_comments,
             repo_name: repo_name,
@@ -65,14 +55,12 @@ module DiscourseCodeReview
         end
 
         if type == "push"
-          puts "ALERT NOTIFICATION: Push webhook received"
           ::Jobs.enqueue(:code_review_sync_commits, repo_name: repo_name, repo_id: repo_id)
         end
 
         if type == "commit_comment"
           syncer = DiscourseCodeReview.github_pr_syncer
           git_commit = params["comment"]["commit_id"]
-          puts "ALERT NOTIFICATION: commit comment received"
           syncer.sync_associated_pull_requests(repo_name, git_commit, repo_id: repo_id)
         end
 
@@ -87,19 +75,13 @@ module DiscourseCodeReview
           syncer.sync_pull_request(repo_name, issue_number, repo_id: repo_id)
         end
       end
-      # puts "Jaleeeeeeelllll"+SiteSetting.code_review_issues_enabled.to_s
-      # puts "Jaleeeeeellllll"+["issues", "issue_comment"].include?(type).to_s
       
       if SiteSetting.code_review_issues_enabled
-      puts "ALERT NOTIFICATION: In issues enabled now"
       
         if ["issues", "issue_comment"].include?(type)
-          puts "ALERT NOTIFICATION: Issue creation or comment received"
           syncer = DiscourseCodeReview.github_issue_syncer
           issue_number = params['issue'] && params['issue']['number']
-          puts "issue message received with number"+ issue_number.to_s
           # raise Discourse::InvalidAccess unless issue_number
-          puts "Abiddddddddddd  GOT THE DATA OF ISSUE HERE           "+repo_name,issue_number,repo_id: repo_id
           syncer.sync_issue(repo_name, issue_number, repo_id: repo_id)
         end
       end
@@ -196,7 +178,6 @@ module DiscourseCodeReview
 
       raise Discourse::NotFound.new unless topic
       guardian.ensure_can_see!(topic)
-      puts "In not found exception now    aaaabbbbbbbbiiiiiiiiiddddddddd"
       redirect_to topic.url
     end
 
